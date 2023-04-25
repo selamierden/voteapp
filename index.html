@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Button Bars</title>
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<!-- Bootstrap JS and jQuery -->
+	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	<style>
+		.row {
+			display: flex;
+			flex-direction: row;
+			justify-content: center;
+			align-items: flex-end;
+		}
+		.col-sm {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+		.bar {
+			height: 0;
+			transition: height 0.5s;
+			margin-top: 5px;
+			width: 100%;
+			border-radius: 7px;
+		}
+		.yellow {
+			background-color: yellow;
+		}
+		.red {
+			background-color: red;
+		}
+		.blue {
+			background-color: blue;
+		}
+		.white {
+			background-color: white;
+		}
+	</style>
+</head>
+<body style="background-color: black;">
+	<div class="container mt-5">
+		<div class="row" style="margin-bottom: 20px;">
+			<div class="col-sm">
+				<div class="bar yellow" style="height: 50px; background-color: yellow;"></div>
+				<button class="btn btn-secondary mt-3" style="width: 180px; background-color: yellow; color: black; border-color: yellow;" onclick="increaseHeight(0)">Recep Tayyip Erdoğan</button>
+				<div class="counter mt-2" style="color: white;">0</div> <!-- add counter below button -->
+			</div>
+			<div class="col-sm">
+				<div class="bar red" style="height: 50px; background-color: red;"></div>
+				<button class="btn btn-secondary mt-3" style="width: 180px; background-color: red; border-color: red;" onclick="increaseHeight(1)">Kemal Kılıçdaroğlu</button>
+				<div class="counter mt-2" style="color: white;">0</div> <!-- add counter below button -->
+			</div>
+			<div class="col-sm">
+				<div class="bar blue" style="height: 50px; background-color: blue;"></div>
+				<button class="btn btn-secondary mt-3" style="width: 180px; background-color: blue; border-color: blue;" onclick="increaseHeight(2)">Muharrem İnce</button>
+				<div class="counter mt-2" style="color: white;">0</div> <!-- add counter below button -->
+			</div>
+			<div class="col-sm">
+				<div class="bar white" style="height: 50px; background-color: white;"></div>
+				<button class="btn btn-secondary mt-3" style="width: 180px; background-color: white; border-color: white; color: black;" onclick="increaseHeight(3)">Sinan Oğan</button>
+				<div class="counter mt-2" style="color: white;">0</div> <!-- add counter below button -->
+			</div>
+		</div>
+	</div>
+	
+	<script>
+		// array to store the vote counts for each candidate
+		var voteCounts = [0, 0, 0, 0];
+	
+		function updateBarHeights() {
+			var bars = document.querySelectorAll('.bar');
+			for (var i = 0; i < bars.length; i++) {
+				var height = 15 * voteCounts[i];
+				bars[i].style.height = height + "px";
+			}
+		}
+	
+		function updateCounters() {
+			var counters = document.querySelectorAll('.counter');
+			for (var i = 0; i < counters.length; i++) {
+				counters[i].textContent = voteCounts[i];
+			}
+		}
+	
+		// load previous votes from local storage when the DOM is loaded
+		document.addEventListener('DOMContentLoaded', function() {
+			var storedCounts = JSON.parse(localStorage.getItem("voteCounts"));
+			if (storedCounts) {
+				voteCounts = storedCounts;
+				updateBarHeights();
+				updateCounters();
+			}
+		});
+	
+		function increaseHeight(index) {
+			// increment the vote count for the selected candidate
+			voteCounts[index] += 1;
+	
+			// update the counter for the selected candidate and the bar height
+			updateCounters();
+			updateBarHeights();
+	
+			// save the vote counts to local storage
+			localStorage.setItem("voteCounts", JSON.stringify(voteCounts));
+	
+			// calculate the total vote count
+			var totalVotes = voteCounts.reduce(function(acc, val) { return acc + val; }, 0);
+	
+			// check if the total vote count reaches 100
+			if (totalVotes >= 100) {
+				// disable buttons
+				var buttons = document.querySelectorAll('button');
+				for (var i = 0; i < buttons.length; i++) {
+					buttons[i].disabled = true;
+				}
+	
+				// find the index of the candidate with the highest vote count
+				var maxIndex = 0;
+				var maxCount = voteCounts[0];
+				for (var i = 1; i < voteCounts.length; i++) {
+					if (voteCounts[i] > maxCount) {
+						maxIndex = i;
+						maxCount = voteCounts[i];
+					}
+				}
+	
+				// calculate the percentage of votes for the winning candidate
+				var winnerVotes = voteCounts[maxIndex];
+				var percentage = (winnerVotes / totalVotes) * 100;
+	
+				// declare the winner and their percentage of votes
+				var winner = "";
+				switch (maxIndex) {
+					case 0:
+						winner = "Recep Tayyip Erdoğan";
+						break;
+					case 1:
+						winner = "Kemal Kılıçdaroğlu";
+						break;
+					case 2:
+						winner = "Muharrem İnce";
+						break;
+					case 3:
+						winner = "Sinan Oğan";
+						break;
+				}
+				var result = "Seçimin kazananı: " + winner + " (%" + percentage.toFixed(2) + ")";
+				console.log(result);
+				document.body.innerHTML += "<h3 style='color: white; text-align: center;'>" + result + "</h3>";
+			}
+		}
+	</script>
+	
+	
+</body>
+</html>
